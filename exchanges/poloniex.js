@@ -17,6 +17,8 @@ var Trader = function(config) {
     this.clientID = config.username;
     this.currency = config.currency;
     this.asset = config.asset;
+
+    this.market = this.currency + "_" + this.asset;
   }
   this.name = 'Poloniex';
   this.balance;
@@ -52,7 +54,7 @@ Trader.prototype.getPortfolio = function(callback) {
   var set = function(err, data) {
     var portfolio = [];
     _.each(data, function(amount, asset) {
-      if(asset.indexOf('available') !== -1) {
+      if(asset.indexOf('available') === -1) {
         //asset = asset.substr(0, 3).toUpperCase();
         portfolio.push({name: asset, amount: parseFloat(amount)});
       }
@@ -63,7 +65,17 @@ Trader.prototype.getPortfolio = function(callback) {
 }
 
 Trader.prototype.getTicker = function(callback) {
-  this.poloniex.getTicker(callback);
+  var mkt_name = this.market;
+  var set = function(err, data) {
+    log.debug("*********************");
+    log.debug(mkt_name);
+    var ticker = {
+      ask: parseFloat(data[mkt_name].lowestAsk),
+      bid: parseFloat(data[mkt_name].highestBid)
+    };
+    callback(err, ticker);
+  }
+  this.poloniex.getTicker(_.bind(set, this));
 }
 
 Trader.prototype.getFee = function(callback) {
@@ -91,9 +103,14 @@ Trader.prototype.sell = function(amount, price, callback) {
   var set = function(err, result) {
     if(err || result.error)
       return log.error('unable to sell:', err, result);
+    log.debug("**** SELL.set ****");
+    log.debug(result);
 
-    callback(null, result.orderNumber);
+    callback(err, result.orderNumber);
   };
+
+  log.debug("**** SELL ****");
+  log.debug([this.currency, this.asset, price, amount, set]);
 
   this.poloniex.sell(this.currency, this.asset, price, amount, _.bind(set, this));
 }
@@ -104,7 +121,7 @@ Trader.prototype.checkOrder = function(order, callback) {
     callback(err, !stillThere);
   };
 
-  this.poloniex.myOpenOrders(_.bind(check, this));
+  this.poloniex.myOpenOrders(this.currency, this.asset, _.bind(check, this));
 }
 
 Trader.prototype.cancelOrder = function(order, callback) {

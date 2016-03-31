@@ -137,6 +137,16 @@ Manager.prototype.trade = function(what) {
       else
         amount = this.getBalance(this.currency) / (this.ticker.ask+(this.ticker.ask*this.fee));
 
+	log.debug("**********************");
+	log.debug(this.currency);
+	log.debug(amount);
+	log.debug(this.ticker.ask);
+	log.debug(this.fee);
+	log.debug(this.getBalance(this.currency));
+	log.debug((this.ticker.ask+(this.ticker.ask*this.fee)))
+	log.debug( this.getBalance(this.currency) / (this.ticker.ask+(this.ticker.ask*this.fee)));
+
+
       // can we just create a MKT order?
       if(this.directExchange)
         price = false;
@@ -157,6 +167,13 @@ Manager.prototype.trade = function(what) {
         amount = 10000;
       else
         amount = this.getBalance(this.asset);
+
+	log.debug("**********************");
+	log.debug(this.currency);
+	log.debug(amount);
+	log.debug(this.ticker.ask);
+	log.debug(this.fee);
+	log.debug(this.getBalance(this.currency));
 
       // can we just create a MKT order?
       if(this.directExchange)

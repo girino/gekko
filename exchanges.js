@@ -349,7 +349,7 @@ var exchanges = [
       { pair: ['BTC', 'GRC'], minimalOrder: { amount: 0.01, unit: 'asset' } },
     ],
     requires: ['key', 'secret'],
-    providesHistory: 'date',
+    providesHistory: false,
   },
 ];
 
